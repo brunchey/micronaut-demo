@@ -1,0 +1,22 @@
+micronaut:
+  application:
+    name: demo
+
+datasources:
+  default:
+    url: ${JDBC_URL:`jdbc:h2:./database;DB_CLOSE_ON_EXIT=FALSE;DB_CLOSE_DELAY=-1;AUTO_SERVER=TRUE`}
+    username: ${JDBC_USER:sa}
+    password: ${JDBC_PASSWORD:""}
+    driverClassName: ${JDBC_DRIVER:org.h2.Driver}
+
+jpa:
+  default:
+    entity-scan:
+      packages:
+        - com.example
+        - org.axonframework.eventhandling.tokenstore.jpa
+    properties:
+      hibernate:
+        hbm2ddl:
+          auto: update
+        show_sql: true
