@@ -3,17 +3,19 @@ package com.example.controllers
 import com.example.api.*
 import io.micronaut.http.annotation.*
 import org.axonframework.commandhandling.gateway.CommandGateway
+import org.axonframework.messaging.responsetypes.ResponseTypes
 import org.axonframework.queryhandling.QueryGateway
-import javax.persistence.EntityManager
-
+import java.util.concurrent.CompletableFuture
 
 @Controller("/giftcard")
-class GiftCardController(private val commandGateway: CommandGateway) {
+class GiftCardController(private val commandGateway: CommandGateway,
+                         private val queryGateway: QueryGateway) {
 
-//    @Get("/summary")
-//    fun getSummary(): List<CardSummary> {
-//
-//    }
+    @Get("/summary")
+    fun getSummary(): CompletableFuture<List<CardSummary>> {
+        val fetchCardSummariesQuery: FetchCardSummariesQuery = FetchCardSummariesQuery(0, 100, CardSummaryFilter(""))
+        return queryGateway.query(fetchCardSummariesQuery, ResponseTypes.multipleInstancesOf(CardSummary::class.java))
+    }
 
     @Post("/")
     fun issueCard(@QueryValue id: String, @QueryValue amount: Int) {

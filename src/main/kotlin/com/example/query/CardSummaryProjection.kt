@@ -1,12 +1,10 @@
 package com.example.query
 
 import com.example.api.*
-import io.micronaut.scheduling.TaskExecutors
-import io.micronaut.scheduling.annotation.ExecuteOn
 import io.micronaut.transaction.annotation.TransactionalAdvice
 import org.axonframework.eventhandling.EventHandler
+import org.axonframework.queryhandling.QueryHandler
 import javax.persistence.EntityManager
-import javax.transaction.Transactional
 
 @TransactionalAdvice
 class CardSummaryProjection(val entityManager: EntityManager) {
@@ -33,5 +31,19 @@ class CardSummaryProjection(val entityManager: EntityManager) {
         val cardSummary = entityManager.find(CardSummary::class.java, event.id)
         cardSummary.remainingValue = 0
     }
+
+    @QueryHandler
+    fun handle(query: FetchCardSummariesQuery): List<CardSummary>? {
+        val jpaQuery = entityManager.createNamedQuery(
+            "CardSummary.fetch",
+            CardSummary::class.java
+        )
+        jpaQuery.setParameter("idStartsWith", query.filter.idStartsWith)
+        jpaQuery.firstResult = query.offset
+        jpaQuery.maxResults = query.limit
+        val results = jpaQuery.resultList
+        return results
+    }
+
 
 }

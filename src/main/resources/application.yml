@@ -15,6 +15,7 @@ jpa:
       packages:
         - com.example
         - org.axonframework.eventhandling.tokenstore.jpa
+      classpath: true
     properties:
       hibernate:
         hbm2ddl:
